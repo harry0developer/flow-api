@@ -24,27 +24,7 @@ app.listen(PORT, () => {
         }
     });
 }); 
-
-
-// GET, POST, DELETE  Inventory 
-app.get('/api/flow/inventory', (req, res)=> {
-    database.collection("inventory").find({}).toArray((err, data)=> {
-        res.send(data);
-    });
-});
-
-app.post('/api/flow/inventory', (req, res) => {
-    database.collection('inventory').insertOne({ req });
-    res.json("Document addedd successfully");
-});
-
-app.delete('/api/flow/inventory', (req, res) => {
-    database.collection('inventory').deleteOne({ 
-        _id:  req.body._id
-     });
-    res.json("Document removed successfully");
-});
-
+ 
 
 // GET, POST, DELETE USER 
 app.route('/api/flow/users')
@@ -56,7 +36,7 @@ app.route('/api/flow/users')
 
     .post((req, res) => {
         database.collection('users').insertOne({ 
-            id: req.id,
+            id: req.body.id,
             profilePhoto: req.body.profilePhoto,
             email: req.body.email,
             gender: req.body.gender,
@@ -80,7 +60,6 @@ app.route('/api/flow/users')
             { id: req.body.id },
             { 
                 $set: { 
-                    id: req.id,
                     profilePhoto: req.body.profilePhoto,
                     email: req.body.email,
                     gender: req.body.gender,
@@ -119,7 +98,7 @@ app.route('/api/flow/customer')
 
     .post((req, res) => {
         database.collection('customer').insertOne({ 
-            id: req.id,
+            id: req.body.id,
             url: req.body.url,
             companyName: req.body.companyName,
             companyVATNumber: req.body.companyVATNumber,
@@ -143,7 +122,6 @@ app.route('/api/flow/customer')
             { id: req.body.id },
             { 
                 $set: { 
-                    url: req.body.url,
                     companyName: req.body.companyName,
                     companyVATNumber: req.body.companyVATNumber,
                     companyBillingAddress: req.body.companyBillingAddress,
@@ -164,6 +142,93 @@ app.route('/api/flow/customer')
 
     .delete((req, res) => {
         database.collection('customer').deleteOne({ 
+            _id:  req.body._id
+        });
+        res.json("Document removed successfully");
+    });
+
+
+
+// GET, POST, DELETE QUOTE 
+app.route('/api/flow/quotes')
+    .get((req, res)=> {
+        database.collection("quotes").find({}).toArray((err, data)=> {
+            res.send(data);
+        })
+    })
+ 
+    .post((req, res) => {
+        database.collection('quotes').insertOne({ 
+            id: req.body.id,
+            quoteNo: req.body.quoteNo,
+            quoteDate: req.body.quoteDate,
+            quoteDueDate: req.body.quoteDueDate,
+            quoteTerm: req.body.quoteTerm,
+            customer: req.body.customer,
+            items: req.body.items,
+            totalPriceExclusive: req.body.totalPriceExclusive,
+            totalVAT: req.body.totalVAT,
+            totalPriceDiscount: req.body.totalPriceDiscount,
+            totalPriceInclusive: req.body.totalPriceInclusive,
+            createdOn: req.body.createdOn,
+            createdBy: req.body.createdBy, 
+            updatedOn: req.body.updatedOn,
+            updatedBy: req.body.updatedBy
+        });
+        res.json("Document addedd successfully");
+    })
+
+ 
+
+
+// GET, POST, DELETE INVENTORY 
+app.route('/api/flow/inventory')
+    .get((req, res)=> {
+        database.collection("inventory").find({}).toArray((err, data)=> {
+            res.send(data);
+        })
+    })
+ 
+    .post((req, res) => {
+        database.collection('inventory').insertOne({ 
+            id: req.body.id,
+            name: req.body.name,
+            description: req.body.description,
+            stockCode: req.body.stockCode,
+            quantity: req.body.quantity,
+            unitPrice: req.body.unitPrice,
+            createdOn: req.body.createdOn,
+            createdBy: req.body.createdBy, 
+            updatedOn: req.body.updatedOn,
+            updatedBy: req.body.updatedBy
+        });
+        res.json("Document addedd successfully");
+    })
+
+    .put((req, res) => {
+        database.collection('inventory').updateOne(
+            { id: req.body.id },
+            { 
+                $set: { 
+                    name: req.body.name,
+                    description: req.body.description,
+                    stockCode: req.body.stockCode,
+                    quantity: req.body.quantity,
+                    photo: req.body.photo,
+                    unitPrice: req.body.unitPrice,
+                    discount: req.body.discount,
+                    VAT: req.body.VAT,
+                    updatedOn: req.body.updatedOn,
+                    updatedBy: req.body.updatedBy,
+                },
+                $currentDate: { lastModified: true }
+            }
+        );
+        res.json("Document updated successfully");
+    })
+
+    .delete((req, res) => {
+        database.collection('inventory').deleteOne({ 
             _id:  req.body._id
         });
         res.json("Document removed successfully");
