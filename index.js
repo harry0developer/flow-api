@@ -14,6 +14,12 @@ var PORT = 5000;
 var DATABASE = 'flow';
 var database;
 
+const USERS ='users';
+const CUSTOMERS ='customer';
+const INVENTORY ='inventory';
+const QUOTES ='quotes';
+const MY_COMPANIES ='my-companies';
+
 app.listen(PORT, () => {
     MongoClient.connect(CONNECTION_STRING, (error, client) => {
         if(client) {
@@ -27,15 +33,15 @@ app.listen(PORT, () => {
  
 
 // GET, POST, DELETE USER 
-app.route('/api/flow/users')
+app.route('/api/flow/'+USERS)
     .get((req, res)=> {
-        database.collection("users").find({}).toArray((err, data)=> {
+        database.collection(USERS).find({}).toArray((err, data)=> {
             res.send(data);
         })
     })
 
     .post((req, res) => {
-        database.collection('users').insertOne({ 
+        database.collection(USERS).insertOne({ 
             id: req.body.id,
             profilePhoto: req.body.profilePhoto,
             email: req.body.email,
@@ -56,7 +62,7 @@ app.route('/api/flow/users')
     })
 
     .put((req, res) => {
-        database.collection('users').updateOne(
+        database.collection(USERS).updateOne(
             { id: req.body.id },
             { 
                 $set: { 
@@ -80,7 +86,7 @@ app.route('/api/flow/users')
     })
 
     .delete((req, res) => {
-        database.collection('users').deleteOne({ 
+        database.collection(USERS).deleteOne({ 
             _id:  req.body._id
         });
         res.json("Document removed successfully");
@@ -89,15 +95,15 @@ app.route('/api/flow/users')
 
 
 // GET, POST, DELETE Customers 
-app.route('/api/flow/customer')
+app.route('/api/flow/'+CUSTOMERS)
     .get((req, res)=> {
-        database.collection("customer").find({}).toArray((err, data)=> {
+        database.collection(CUSTOMERS).find({}).toArray((err, data)=> {
             res.send(data);
         })
     })
 
     .post((req, res) => {
-        database.collection('customer').insertOne({ 
+        database.collection(CUSTOMERS).insertOne({ 
             id: req.body.id,
             url: req.body.url,
             companyName: req.body.companyName,
@@ -118,7 +124,7 @@ app.route('/api/flow/customer')
     })
 
     .put((req, res) => {
-        database.collection('customer').updateOne(
+        database.collection(CUSTOMERS).updateOne(
             { id: req.body.id },
             { 
                 $set: { 
@@ -132,7 +138,8 @@ app.route('/api/flow/customer')
                     contactPersonPhoneNumber: req.body.contactPersonPhoneNumber,
                     contactPersonTitle: req.body.contactPersonTitle, 
                     updatedBy: req.body.updatedBy,
-                    updatedOn: req.body.updatedOn
+                    updatedOn: req.body.updatedOn,
+                    bankDetails: req.body.bankDetails
                 },
                 $currentDate: { lastModified: true }
             }
@@ -141,7 +148,70 @@ app.route('/api/flow/customer')
     })
 
     .delete((req, res) => {
-        database.collection('customer').deleteOne({ 
+        database.collection(CUSTOMERS).deleteOne({ 
+            _id:  req.body._id
+        });
+        res.json("Document removed successfully");
+    });
+
+
+// GET, POST, DELETE MY_COMPANIES 
+app.route('/api/flow/'+MY_COMPANIES)
+    .get((req, res)=> {
+        database.collection(MY_COMPANIES).find({}).toArray((err, data)=> {
+            res.send(data);
+        })
+    })
+
+    .post((req, res) => {
+        database.collection(MY_COMPANIES).insertOne({ 
+            id: req.body.id,
+            logo: req.body.logo,
+            name: req.body.name,
+            VATNumber: req.body.VATNumber,
+            registrationNumber: req.body.registrationNumber,
+            shippingAddress: req.body.shippingAddress,
+            billingAddress: req.body.billingAddress,
+            website: req.body.website,
+            phoneNumber: req.body.phoneNumber,
+            emailAddress: req.body.emailAddress,
+            contactPerson: req.body.contactPerson,
+            bankDetails: req.body.bankDetails,
+            createdBy: req.body.createdBy,
+            createdOn: req.body.createdOn,
+            updatedBy: req.body.updatedBy,
+            updatedOn: req.body.updatedOn,
+        });
+        res.json("Document addedd successfully");
+    })
+
+    .put((req, res) => {
+        database.collection(MY_COMPANIES).updateOne(
+            { id: req.body.id },
+            { 
+                $set: {  
+                    logo: req.body.logo,
+                    name: req.body.name,
+                    VATNumber: req.body.VATNumber,
+                    registrationNumber: req.body.registrationNumber,
+                    shippingAddress: req.body.shippingAddress,
+                    billingAddress: req.body.billingAddress,
+                    website: req.body.website,
+                    phoneNumber: req.body.phoneNumber,
+                    emailAddress: req.body.emailAddress,
+                    contactPerson: req.body.contactPerson,
+                    bankDetails: req.body.bankDetails,
+                    updatedBy: req.body.updatedBy,
+                    updatedOn: req.body.updatedOn,
+                },
+                $currentDate: { lastModified: true }
+            }
+        );
+        res.json("Document updated successfully");
+    })
+
+    .delete((req, res) => {
+        database.collection(MY_COMPANIES).deleteOne({ 
             _id:  req.body._id
         });
         res.json("Document removed successfully");
@@ -150,15 +220,15 @@ app.route('/api/flow/customer')
 
 
 // GET, POST, DELETE QUOTE 
-app.route('/api/flow/quotes')
+app.route('/api/flow/'+QUOTES)
     .get((req, res)=> {
-        database.collection("quotes").find({}).toArray((err, data)=> {
+        database.collection(QUOTES).find({}).toArray((err, data)=> {
             res.send(data);
         })
     })
  
     .post((req, res) => {
-        database.collection('quotes').insertOne({ 
+        database.collection(QUOTES).insertOne({ 
             id: req.body.id,
             quoteNo: req.body.quoteNo,
             quoteDate: req.body.quoteDate,
@@ -179,18 +249,16 @@ app.route('/api/flow/quotes')
     })
 
  
-
-
 // GET, POST, DELETE INVENTORY 
-app.route('/api/flow/inventory')
+app.route('/api/flow/'+INVENTORY)
     .get((req, res)=> {
-        database.collection("inventory").find({}).toArray((err, data)=> {
+        database.collection(INVENTORY).find({}).toArray((err, data)=> {
             res.send(data);
         })
     })
  
     .post((req, res) => {
-        database.collection('inventory').insertOne({ 
+        database.collection(INVENTORY).insertOne({ 
             id: req.body.id,
             name: req.body.name,
             description: req.body.description,
@@ -206,7 +274,7 @@ app.route('/api/flow/inventory')
     })
 
     .put((req, res) => {
-        database.collection('inventory').updateOne(
+        database.collection(INVENTORY).updateOne(
             { id: req.body.id },
             { 
                 $set: { 
@@ -228,7 +296,7 @@ app.route('/api/flow/inventory')
     })
 
     .delete((req, res) => {
-        database.collection('inventory').deleteOne({ 
+        database.collection(INVENTORY).deleteOne({ 
             _id:  req.body._id
         });
         res.json("Document removed successfully");
