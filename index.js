@@ -1,24 +1,29 @@
 var Express = require('express');
-var MongoClient = require('mongodb').MongoClient;
-var cors = require('cors');
-var bodyParser = require('body-parser');
-
-var app = Express();
+const MongoClient = require('mongodb').MongoClient;
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
+const app = Express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
-// var CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/';
-var CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/?retryWrites=true&w=majority';
-var PORT = 5000;
-var DATABASE = 'flow';
-var database;
+// const CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/';
+const CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/?retryWrites=true&w=majority';
+const PORT = 5000;
+const DATABASE = 'flow';
+let database;
 
+const LOGIN = 'login';
+const SIGNUP = 'signup';
 const USERS ='users';
+const USERNAME = 'username';
 const CUSTOMERS ='customer';
 const INVENTORY ='inventory';
 const QUOTES ='quotes';
 const MY_COMPANIES ='my-companies';
+
 
 app.listen(PORT, () => {
     MongoClient.connect(CONNECTION_STRING, (error, client) => {
@@ -31,10 +36,50 @@ app.listen(PORT, () => {
     });
 }); 
  
+// LOGIN
+app.route('/api/flow/'+LOGIN)
+    .post((req, res) => {
+        let userFound;
+        database.collection.findOne({ username: req.body.username  })
+            .then(user => {
+                if(!user) {
+                    return res.status(401).json({
+                        message: 'User not found'
+                    })
+                }
+                userFound = user;
+                return bcrypt.compare(req.body.password, user.password)
+            })
+        .then(result => {
+            if(!result) {
+                return res.status(401).json({
+                    message: 'Password incorrect'
+                })
+            }
+            const token = jwt.sign({username: userFound.username, userId: userFound._id}, 'secret_string', {expiresIn: '1h'});
+            return res.status(200).json({
+                token: token
+            })
+
+        })
+        .catch(err => {
+            return res.status(401).json({
+                message: 'Error with authentication'
+            })
+        })
+    });
+
+// USERNAME 
+app.route('/api/flow/'+USERNAME)
+    .post((req, res) => {
+        database.collection(USERS).find({ username: req.body.username }).toArray((err, data)=> {
+            res.send(data);
+        })
+    });
 
 // GET, POST, DELETE USER 
 app.route('/api/flow/'+USERS)
-    .get((req, res)=> {
+    .get((req, res) => {
         database.collection(USERS).find({}).toArray((err, data)=> {
             res.send(data);
         })
