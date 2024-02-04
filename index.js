@@ -40,7 +40,7 @@ app.listen(PORT, () => {
 app.route('/api/flow/'+LOGIN)
     .post((req, res) => {
         let userFound;
-        database.collection.findOne({ username: req.body.username  })
+        database.collection(USERS).findOne({ username: req.body.username })
             .then(user => {
                 if(!user) {
                     return res.status(401).json({
