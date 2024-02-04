@@ -55,8 +55,14 @@ const companySchema = new mongoose.Schema({
         required: false,
         lowercase: true
     },
-    contactPerson: mongoose.SchemaTypes.ObjectId,
-    bankDetails: bankDetailsSchema,
+    contactPersonId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: true
+    },
+    bankDetails: {
+        type: bankDetailsSchema,
+        required: true
+    },
 
     createdOn: {
         type: Date,

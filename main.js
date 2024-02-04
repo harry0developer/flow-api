@@ -12,7 +12,7 @@ const InventoryModel = require('./models/inventory');
 
 
 
-const USERS = 'api/flow/users';
+const USERS = '/users';
 const CUSTOMERS = '/customers';
 const INVENTORY = '/inventory';
 const QUOTES = '/qoutes';
