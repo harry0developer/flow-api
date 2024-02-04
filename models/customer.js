@@ -49,7 +49,7 @@ const customerSchema = new mongoose.Schema({
         required: false,
         default: 'https://craftypixels.com/placeholder-image/200.png/018c8c/fff'
     },
-    companyName: {
+    name: {
         type: String,
         required: true 
     },
