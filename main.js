@@ -1,7 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 const app = express();
+const jwt = require('jsonwebtoken');
+
+app.use(express.json());
+app.use(cors());
+
+const authRoutes = require('./routes/auth');
+const protectedRoutes = require('./routes/protected');
+
+app.use('/auth', authRoutes);
+app.use('/protected', protectedRoutes)
 
 const UserModel = require('./models/user');
 const CustomerModel = require('./models/customer');
@@ -11,19 +22,20 @@ const InvoiceModel = require('./models/invoice');
 const InventoryModel = require('./models/inventory');
 
 
-
 const USERS = '/users';
 const CUSTOMERS = '/customers';
 const INVENTORY = '/inventory';
 const QUOTES = '/qoutes';
 const COMPANIES = '/companies';
 const INVOICES = '/invoices';
+const LOGIN = '/login';
+const REGISTER = '/register';
+
 
 
 const PORT = 5000;
 const CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/flow?retryWrites=true&w=majority';
-app.use(express.json());
-app.use(cors());
+
 
 const start = async () => {
     try {
@@ -38,6 +50,47 @@ const start = async () => {
 }; 
 
 start();
+ 
+// LOGIN AUH JWT =============
+
+app.post(REGISTER, async(req, res) => {
+    try {
+        const userData = req.body;
+        const hasedPassword = await bcrypt.hash(userData.password, 10);
+        userData.password = hasedPassword;
+        const user = new UserModel({...userData});
+        await user.save();
+        res.status(200).json({message: 'User registed successfully'});
+    } catch(error) {
+        console.log(error);
+        res.status(500).json({error: error.message});
+    }
+});
+
+app.post(LOGIN, async(req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await UserModel.findOne({email});
+        if(!user) {
+            return res.status(401).json({error: 'Authentication failed'});
+        } 
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if(!passwordMatch) {
+            return res.status(401).json({error: 'Authentication failed password'});
+        }
+
+        const token = jwt.sign({userId: user._id}, 'your-secret-key', { expiresIn: '1h' });
+        const data = {
+            user, token
+        }
+        res.status(200).json({data});
+
+    } catch(error) {
+        console.log(error);
+        res.status(500).json({error: "Something went wrong"})
+    }
+});
+ 
 
 
 //USERS ==============================

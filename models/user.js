@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    username: {
+    email: {
         type: String,
-        required: false
+        required: true,
+        unique: true,
+        lowercase: true
     },
     password: {
         type: String,
-        required: false
+        required: true
     },
     firstName: {
         type: String,
@@ -29,11 +31,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    email: {
-        type: String,
-        required: false,
-        lowercase: true
-    },
+    
     phone: {
         type: String,
         required: false
@@ -51,27 +49,7 @@ const userSchema = new mongoose.Schema({
     physicalAddress: {
         type: String,
         required: false
-    },
-    createdOn: {
-        type: Date,
-        required: false,
-        default: () => Date.now()
-    },
-    createdBy: {
-        type: mongoose.SchemaTypes.ObjectId,
-        required: false,
-        ref: "User"
-    } ,
-    updatedOn: {
-        type: Date,
-        required: false,
-        default: () => Date.now()
-    },
-    updatedBy: {
-        type: mongoose.SchemaTypes.ObjectId,
-        required: false,
-        ref: "User"
-    },
+    }
 });
  
 module.exports = mongoose.model("User", userSchema, "users");
