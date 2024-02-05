@@ -73,6 +73,8 @@ const quoteSchema = new mongoose.Schema({
         required: false,
         ref: "User"
     },
+}, {
+    strictPopulate: false
 })
 
 module.exports =  mongoose.model("Qoute", quoteSchema, "quotes");

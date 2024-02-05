@@ -25,7 +25,7 @@ const InventoryModel = require('./models/inventory');
 const USERS = '/users';
 const CUSTOMERS = '/customers';
 const INVENTORY = '/inventory';
-const QUOTES = '/qoutes';
+const QUOTES = '/quotes';
 const COMPANIES = '/companies';
 const INVOICES = '/invoices';
 const LOGIN = '/login';
@@ -253,7 +253,7 @@ app.delete(INVENTORY + "/:id", async(req, res) => {
 
 app.get(QUOTES, async(req, res) => {
     try { 
-        const item = await QuoteModel.find();
+        const item = await QuoteModel.find().populate("items").populate('customer').populate('company');
         return res.status(200).json(item);
     } catch(error) {
         res.status(500).json({ error: error.message });
