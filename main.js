@@ -8,18 +8,13 @@ const jwt = require('jsonwebtoken');
 app.use(express.json());
 app.use(cors());
 
-const authRoutes = require('./routes/auth');
-const protectedRoutes = require('./routes/protected');
-
-app.use('/auth', authRoutes);
-app.use('/protected', protectedRoutes)
-
 const UserModel = require('./models/user');
 const CustomerModel = require('./models/customer');
 const CompanyModel = require('./models/company');
 const QuoteModel = require('./models/quote');
 const InvoiceModel = require('./models/invoice');
 const InventoryModel = require('./models/inventory');
+const SalesOrderModel = require('./models/sales-order');
 
 
 const USERS = '/users';
@@ -30,8 +25,7 @@ const COMPANIES = '/companies';
 const INVOICES = '/invoices';
 const LOGIN = '/login';
 const REGISTER = '/register';
-
-
+const SALES_ORDER = '/sales-order';
 
 const PORT = 5000;
 const CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/flow?retryWrites=true&w=majority';
@@ -91,7 +85,6 @@ app.post(LOGIN, async(req, res) => {
     }
 });
  
-
 
 //USERS ==============================
 
@@ -253,7 +246,7 @@ app.delete(INVENTORY + "/:id", async(req, res) => {
 
 app.get(QUOTES, async(req, res) => {
     try { 
-        const item = await QuoteModel.find().populate("items").populate('customer').populate('company');
+        const item = await QuoteModel.find().populate('customer').populate('company');
         return res.status(200).json(item);
     } catch(error) {
         res.status(500).json({ error: error.message });
@@ -298,7 +291,6 @@ app.delete(QUOTES + "/:id", async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 
 
 //COMPANIES ==============================
@@ -353,10 +345,9 @@ app.delete(COMPANIES + "/:id", async(req, res) => {
 
 
 //INVOICES ==============================
-
 app.get(INVOICES, async(req, res) => {
     try { 
-        const item = await InvoiceModel.find();
+        const item = await InvoiceModel.find().populate('customer').populate('company').populate('quote').populate('createdBy');
         return res.status(200).json(item);
     } catch(error) {
         res.status(500).json({ error: error.message });
@@ -396,6 +387,57 @@ app.delete(INVOICES + "/:id", async(req, res) => {
     try {
         
         const item = await InvoiceModel.findByIdAndDelete(req.params['id']); 
+        return res.status(200).json(item);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
+//SALES ORDER ==============================
+app.get(SALES_ORDER, async(req, res) => {
+    try { 
+        const item = await SalesOrderModel.find().populate('customer').populate('company').populate('quote').populate('createdBy');
+        return res.status(200).json(item);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get(SALES_ORDER + "/:id", async(req, res) => {
+    try {
+        const item = await SalesOrderModel.findById(req.params['id'])
+        return res.status(200).json(item);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post(SALES_ORDER, async(req, res) => {
+    try {
+        const item = new SalesOrderModel({...req.body});
+        const savedItem = await item.save();
+        return res.status(200).json(savedItem);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put(SALES_ORDER, async(req, res) => {
+    try {
+        await SalesOrderModel.updateOne({_id: req.body._id}, req.body);
+        const item = await SalesOrderModel.findById(req.body_id);
+        return res.status(200).json(item);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete(SALES_ORDER + "/:id", async(req, res) => {
+    try {
+        
+        const item = await SalesOrderModel.findByIdAndDelete(req.params['id']); 
         return res.status(200).json(item);
     } catch(error) {
         res.status(500).json({ error: error.message });

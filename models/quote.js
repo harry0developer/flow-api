@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const quoteSchema = new mongoose.Schema({
     quoteNo: {
         type: String,
-        required: true
+        required: true,
     },
     quoteDate: {
         type: Date,
@@ -33,9 +33,68 @@ const quoteSchema = new mongoose.Schema({
         ref: "Company"
     },
     items: {
-        type: Array(mongoose.SchemaTypes.ObjectId),
-        requried: true,
-        ref: "Inventory"
+        type: [
+            {
+                id: {
+                    type: String,
+                    required: true
+                },
+                name: {
+                    type: String,
+                    required: true  
+                }, 
+                photo: {
+                    type: String,
+                    required: false,
+                    default: () => "https://craftypixels.com/placeholder-image/300.png/018c8c/fff"
+                },
+                stockCode: {
+                    type: String,
+                    required: true  
+                }, 
+                description: {
+                    type: String,
+                    required: true   
+                },
+                quantity: {
+                    type: Number,
+                    required: true   
+                },
+                costPrice: {
+                    type: Number,
+                    required: true   
+                },
+                sellingPrice: {
+                    type: Number,
+                    required: true   
+                },
+                discountPrice: {
+                    type: Number,
+                    required: false,
+                    default: 0 
+                },
+                discountPercentage: {
+                    type: Number,
+                    required: false,
+                    default: 0   
+                },
+                VAT: {
+                    type: Number,
+                    required: false,
+                    default: 0
+                },
+            }
+        ]
+
+    },
+    invoiced: {
+        type: Boolean,
+        required: true
+    },
+    invoice: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: false,
+        ref: "Invoice"
     },
     totalPriceExclusive: {
         type: Number,
@@ -77,4 +136,4 @@ const quoteSchema = new mongoose.Schema({
     strictPopulate: false
 })
 
-module.exports =  mongoose.model("Qoute", quoteSchema, "quotes");
+module.exports =  mongoose.model("Quote", quoteSchema, "quotes");

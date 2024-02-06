@@ -1,5 +1,18 @@
+GET http://localhost:5000/invoices
 
-GET http://localhost:5000/users 
+
+DELETE http://localhost:5000/invoices/65c26a63a367dba4343af2b0
+
+
+
+
+
+
+
+
+
+
+
 
 
 DELETE http://localhost:5000/users/65c0fad0e0883dd606555396
