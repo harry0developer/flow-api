@@ -87,14 +87,14 @@ const quoteSchema = new mongoose.Schema({
         ]
 
     },
-    invoiced: {
+    hasSalesOrder: {
         type: Boolean,
         required: true
     },
-    invoice: {
+    salesOrder: {
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
-        ref: "Invoice"
+        ref: "SalesOrder"
     },
     totalPriceExclusive: {
         type: Number,

@@ -33,29 +33,13 @@ const invoiceSchema = new mongoose.Schema({
         ref: "Quote",
         required: true
     },
-    hasSalesOrder: {
-        type: Boolean,
-        required: true
-    },
     salesOrder: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "SalesOrder",
         required: false
     },
-    totalPriceExclusive: {
-        type: Number,
-        required: true
-    },
-    totalVAT: {
-        type: Number,
-        required: true
-    },
-    totalPriceDiscount: {
-        type: Number,
-        required: true
-    },
-    totalPriceInclusive: {
-        type: Number,
+    paid: {
+        type: Boolean,
         required: true
     },
     createdOn: {

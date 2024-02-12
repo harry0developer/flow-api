@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const app = express();
 const jwt = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
 
 app.use(express.json());
 app.use(cors());
@@ -15,7 +16,7 @@ const QuoteModel = require('./models/quote');
 const InvoiceModel = require('./models/invoice');
 const InventoryModel = require('./models/inventory');
 const SalesOrderModel = require('./models/sales-order');
-
+const PurchaseOrderModel = require('./models/purchase-order');
 
 const USERS = '/users';
 const CUSTOMERS = '/customers';
@@ -26,6 +27,7 @@ const INVOICES = '/invoices';
 const LOGIN = '/login';
 const REGISTER = '/register';
 const SALES_ORDER = '/sales-order';
+const PURCHASE_ORDER = '/purchase-order';
 
 const PORT = 5000;
 const CONNECTION_STRING = 'mongodb+srv://admin:Pro12345@cluster0.l3tzc0c.mongodb.net/flow?retryWrites=true&w=majority';
@@ -44,7 +46,7 @@ const start = async () => {
 }; 
 
 start();
- 
+
 // LOGIN AUH JWT =============
 
 app.post(REGISTER, async(req, res) => {
@@ -57,7 +59,7 @@ app.post(REGISTER, async(req, res) => {
         res.status(200).json({message: 'User registed successfully'});
     } catch(error) {
         console.log(error);
-        res.status(500).json({error: error.message});
+        res.status(500).json({error: "Account already exists, please login"});
     }
 });
 
@@ -181,7 +183,6 @@ app.put(CUSTOMERS, async(req, res) => {
 
 app.delete(CUSTOMERS + "/:id", async(req, res) => {
     try {
-        
         const item = await CustomerModel.findByIdAndDelete(req.params['id']); 
         return res.status(200).json(item);
     } catch(error) {
@@ -243,7 +244,6 @@ app.delete(INVENTORY + "/:id", async(req, res) => {
 
 
 //QUOTES ==============================
-
 app.get(QUOTES, async(req, res) => {
     try { 
         const item = await QuoteModel.find().populate('customer').populate('company');
@@ -433,13 +433,44 @@ app.put(SALES_ORDER, async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+ 
 
-app.delete(SALES_ORDER + "/:id", async(req, res) => {
-    try {
-        
-        const item = await SalesOrderModel.findByIdAndDelete(req.params['id']); 
+//PURCHASE ORDER ==============================
+app.get(PURCHASE_ORDER, async(req, res) => {
+    try { 
+        const item = await PurchaseOrderModel.find().populate('customer').populate('company').populate('quote').populate('createdBy');
         return res.status(200).json(item);
     } catch(error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+app.get(PURCHASE_ORDER + "/:id", async(req, res) => {
+    try {
+        const item = await PurchaseOrderModel.findById(req.params['id'])
+        return res.status(200).json(item);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post(PURCHASE_ORDER, async(req, res) => {
+    try {
+        const item = new PurchaseOrderModel({...req.body});
+        const savedItem = await item.save();
+        return res.status(200).json(savedItem);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put(PURCHASE_ORDER, async(req, res) => {
+    try {
+        await PurchaseOrderModel.updateOne({_id: req.body._id}, req.body);
+        const item = await PurchaseOrderModel.findById(req.body_id);
+        return res.status(200).json(item);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+ 

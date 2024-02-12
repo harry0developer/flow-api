@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
- 
-const salesOrderSchema = new mongoose.Schema({
-    salesOrderNo: {
+
+const purchaseOrderSchema = new mongoose.Schema({
+    purchaseOrderNo: {
         type: String,
         required: true
     },
-    salesOrderDate: {
+    purchaseOrderDate: {
         type: Date,
         requried: true
     },
@@ -19,20 +19,26 @@ const salesOrderSchema = new mongoose.Schema({
         required: true,
         ref: "Company"
     },
+ 
     quote: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "Quote",
         required: true
     },
-    purchaseOrder: {
+    salesOrder:  {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "PurchaseOrder",
+        ref: "SalesOrder",
+        required: true
+    },
+    Invoice: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Invoice",
         required: false,
     },
-    hasPurchaseOrder: {
+    hasInvoice: {
         type: Boolean,
-        required: false,
-    }, 
+        required: true
+    },
     createdOn: {
         type: Date,
         required: false,
@@ -57,4 +63,4 @@ const salesOrderSchema = new mongoose.Schema({
     strictPopulate: false
 })
 
-module.exports =  mongoose.model("SalesOrder", salesOrderSchema, "sales_order");
+module.exports =  mongoose.model("PurchaseOrder", purchaseOrderSchema, "purchase_order");
